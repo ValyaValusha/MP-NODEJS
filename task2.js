@@ -2,8 +2,8 @@ import fs from 'fs';
 import csvtojson from 'csvtojson';
 import { pipeline } from 'stream';
 
-const csvFilePath = './csv/file.csv';
-const outputFilePath = './txt/file.txt';
+const csvFilePath = './files/file.csv';
+const outputFilePath = './files/file.txt';
 
 pipeline(
   fs.createReadStream(csvFilePath),

@@ -1,16 +1,16 @@
-import readline from "readline";
+import { createInterface } from 'readline';
 
-const rl = readline.createInterface({
+const stdInterface = createInterface({
   input: process.stdin,
   output: process.stdout,
   terminal: false
 });
 
-rl.on("line", input => {
+stdInterface.on('line', input => {
   let result = input
-    .split("")
+    .split('')
     .reverse()
-    .join("");
+    .join('');
 
   console.log(result);
 });

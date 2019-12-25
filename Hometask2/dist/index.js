@@ -18,7 +18,6 @@ const Joi = __importStar(require("@hapi/joi"));
 const app = express_1.default();
 const port = 3000;
 const schema = Joi.object().keys({
-    id: Joi.string().required(),
     login: Joi.string()
         .alphanum()
         .min(6)
@@ -31,8 +30,7 @@ const schema = Joi.object().keys({
     age: Joi.number()
         .greater(4)
         .less(130)
-        .required(),
-    isDeleted: Joi.boolean().required()
+        .required()
 });
 let users = [];
 app.use(cors_1.default());
@@ -61,7 +59,6 @@ app.get('/user/:id', (req, res) => {
 app.post('/user', (req, res) => {
     const id = uuid_1.default();
     let user = req.body;
-    user.id = id;
     const { error, value } = schema.validate(user);
     if (error) {
         res.status(400).json({
@@ -71,11 +68,13 @@ app.post('/user', (req, res) => {
         });
     }
     else {
+        user.id = id;
+        user.isDeleted = false;
         users.push(user);
         res.send('User is added to the database');
     }
 });
-app.post('/user/:id', (req, res) => {
+app.put('/user/:id', (req, res) => {
     const id = req.params.id;
     const newUser = req.body;
     let isUserExists = false;
@@ -88,7 +87,7 @@ app.post('/user/:id', (req, res) => {
         });
     }
     else {
-        users.map((user, index) => {
+        users.forEach((user, index) => {
             if (user.id === id) {
                 users[index] = newUser;
                 users[index].id = id;
@@ -104,7 +103,7 @@ app.post('/user/:id', (req, res) => {
 app.delete('/user/:id', (req, res) => {
     const id = req.params.id;
     let isUserExists = false;
-    users.map((user, index) => {
+    users.forEach((user, index) => {
         if (user.id === id) {
             users[index].isDeleted = true;
             isUserExists = true;

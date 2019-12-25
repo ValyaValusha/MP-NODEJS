@@ -9,7 +9,6 @@ const app = express();
 const port = 3000;
 
 const schema = Joi.object().keys({
-  id: Joi.string().required(),
   login: Joi.string()
     .alphanum()
     .min(6)
@@ -22,8 +21,7 @@ const schema = Joi.object().keys({
   age: Joi.number()
     .greater(4)
     .less(130)
-    .required(),
-  isDeleted: Joi.boolean().required()
+    .required()
 });
 
 type User = {
@@ -67,7 +65,6 @@ app.get('/user/:id', (req: Request, res: Response) => {
 app.post('/user', (req: Request, res: Response) => {
   const id: string = uuidv4();
   let user = req.body as User;
-  user.id = id;
 
   const { error, value } = schema.validate(user);
 
@@ -78,12 +75,14 @@ app.post('/user', (req: Request, res: Response) => {
       data: user
     });
   } else {
+    user.id = id;
+    user.isDeleted = false;
     users.push(user);
     res.send('User is added to the database');
   }
 });
 
-app.post('/user/:id', (req: Request, res: Response) => {
+app.put('/user/:id', (req: Request, res: Response) => {
   const id: string = req.params.id;
   const newUser = req.body as User;
   let isUserExists: boolean = false;
@@ -96,7 +95,7 @@ app.post('/user/:id', (req: Request, res: Response) => {
       data: newUser
     });
   } else {
-    users.map((user, index) => {
+    users.forEach((user, index) => {
       if (user.id === id) {
         users[index] = newUser;
         users[index].id = id;
@@ -115,7 +114,7 @@ app.delete('/user/:id', (req: Request, res: Response) => {
   const id: string = req.params.id;
   let isUserExists: boolean = false;
 
-  users.map((user, index) => {
+  users.forEach((user, index) => {
     if (user.id === id) {
       users[index].isDeleted = true;
       isUserExists = true;
